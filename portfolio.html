@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shafin - Expert Webflow Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles for Animations and Effects */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617; /* slate-950 */
+            color: #e2e8f0; /* slate-200 */
+            font-weight: 300; /* Lighter base font weight */
+        }
+        
+        /* Hide default cursor for a custom experience */
+        body, a, button {
+            cursor: none;
+        }
+
+        .hero-bg {
+            background-image: linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 1)), url('my-background.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .glow-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+            z-index: 1;
+        }
+
+        .glow-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.6), transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.8s ease;
+            z-index: -1;
+        }
+
+        .glow-btn:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .glow-btn:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .service-card, .portfolio-card, .testimonial-card {
+            background: rgba(15, 23, 42, 0.5); /* slate-900 with opacity */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover, .portfolio-card:hover, .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        /* Scroll Animations */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* Header Scroll Effect */
+        .header-scrolled {
+            background-color: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Cursor */
+        .cursor-dot, .cursor-circle {
+            pointer-events: none;
+            position: fixed;
+            top: 0; /* Set to 0 and let GSAP handle positioning */
+            left: 0; /* Set to 0 and let GSAP handle positioning */
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+        }
+
+        .cursor-circle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #fff;
+            /* GSAP now handles all transitions, so the 'transition' property is removed. */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-white">Shafin<span class="text-blue-500">.</span></a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="text-slate-300 hover:text-blue-400 transition-colors font-normal">About</a>
+                <a href="#services" class="text-slate-300 hover:text-blue-400 transition-colors font-normal">Services</a>
+                <a href="#work" class="text-slate-300 hover:text-blue-400 transition-colors font-normal">Work</a>
+                <a href="#contact" class="glow-btn bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg">
+                    Get In Touch
+                </a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900/90 backdrop-blur-sm">
+            <a href="#about" class="block py-3 px-6 text-slate-300 hover:bg-slate-800 font-normal">About</a>
+            <a href="#services" class="block py-3 px-6 text-slate-300 hover:bg-slate-800 font-normal">Services</a>
+            <a href="#work" class="block py-3 px-6 text-slate-300 hover:bg-slate-800 font-normal">Work</a>
+            <a href="#contact" class="block py-3 px-6 text-slate-300 hover:bg-slate-800 font-normal">Contact</a>
+        </div>
+    </header>
+
+    <section id="home" class="hero-bg min-h-screen flex items-center md:bg-fixed">
+        <div class="container mx-auto px-6 text-center">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-semibold text-white leading-tight mb-6 scroll-animate">
+                    Crafting <span class="gradient-text">Pixel-Perfect</span> Websites with Webflow
+                </h1>
+                <p class="text-lg md:text-xl text-slate-300 mb-10 scroll-animate" style="transition-delay: 150ms;">
+                    I'm Shafin, a freelance Webflow developer transforming innovative ideas into stunning, high-performing digital experiences.
+                </p>
+                <div class="flex justify-center items-center space-x-4 scroll-animate" style="transition-delay: 300ms;">
+                    <a href="#work" class="glow-btn bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-lg">
+                        View My Work
+                    </a>
+                    <a href="#contact" class="glow-btn bg-transparent border-2 border-blue-500 text-white font-bold py-4 px-8 rounded-lg text-lg">
+                        Let's Talk
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 md:py-32">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="scroll-animate">
+                    <img src="https://placehold.co/600x600/1e40af/ffffff?text=Shafin" alt="Shafin Portrait" class="rounded-2xl shadow-2xl w-full h-auto object-cover">
+                </div>
+                <div class="scroll-animate" style="transition-delay: 150ms;">
+                    <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">About Me</h2>
+                    <p class="text-slate-400 mb-6">
+                        With over 5 years of experience in web development, I specialize in creating bespoke websites using Webflow. My passion lies in bridging the gap between design and development, delivering websites that are not only visually appealing but also intuitive, responsive, and optimized for performance.
+                    </p>
+                    <p class="text-slate-400 mb-8">
+                        I believe in a collaborative process, working closely with clients to understand their vision and translate it into a digital reality that drives results.
+                    </p>
+                    <a href="#contact" class="glow-btn bg-blue-600 text-white font-semibold py-3 px-7 rounded-lg">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 md:py-32 bg-slate-900/50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4 scroll-animate">My Services</h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto scroll-animate" style="transition-delay: 150ms;">
+                    From concept to launch, I provide end-to-end Webflow solutions tailored to your business needs.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="service-card p-8 rounded-2xl text-center scroll-animate">
+                    <div class="text-blue-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Custom Webflow Development</h3>
+                    <p class="text-slate-400">Building fully custom, responsive, and scalable websites from scratch in Webflow.</p>
+                </div>
+                <div class="service-card p-8 rounded-2xl text-center scroll-animate" style="transition-delay: 150ms;">
+                    <div class="text-blue-400 mb-4">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">Figma to Webflow</h3>
+                    <p class="text-slate-400">Pixel-perfect conversion of your Figma, Sketch, or Adobe XD designs into a functional Webflow site.</p>
+                </div>
+                <div class="service-card p-8 rounded-2xl text-center scroll-animate" style="transition-delay: 300ms;">
+                    <div class="text-blue-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">CMS & E-commerce</h3>
+                    <p class="text-slate-400">Setting up powerful CMS and E-commerce systems to manage your content and products effortlessly.</p>
+                </div>
+                <div class="service-card p-8 rounded-2xl text-center scroll-animate" style="transition-delay: 450ms;">
+                    <div class="text-blue-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-3">GSAP Animations</h3>
+                    <p class="text-slate-400">Integrating advanced, high-performance animations with GSAP to bring your website to life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="work" class="py-20 md:py-32">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4 scroll-animate">Featured Work</h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto scroll-animate" style="transition-delay: 150ms;">
+                    Here are some of the projects I'm proud to have worked on.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="portfolio-card rounded-2xl overflow-hidden group scroll-animate">
+                    <div class="overflow-hidden">
+                        <img src="https://placehold.co/800x600/0f172a/3b82f6?text=Project+One" alt="Project One" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-white mb-2">Corporate Website Redesign</h3>
+                        <p class="text-slate-400 mb-4">A complete overhaul for a tech startup, focusing on modern UI/UX and lead generation.</p>
+                        <a href="#" class="text-blue-400 font-semibold hover:text-blue-300 transition-colors">View Project &rarr;</a>
+                    </div>
+                </div>
+                <div class="portfolio-card rounded-2xl overflow-hidden group scroll-animate" style="transition-delay: 150ms;">
+                    <div class="overflow-hidden">
+                        <img src="https://placehold.co/800x600/0f172a/6366f1?text=Project+Two" alt="Project Two" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-white mb-2">E-commerce Store</h3>
+                        <p class="text-slate-400 mb-4">A stylish and high-converting online store for a fashion brand, built with Webflow E-commerce.</p>
+                        <a href="#" class="text-blue-400 font-semibold hover:text-blue-300 transition-colors">View Project &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-20 md:py-32 bg-slate-900/50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4 scroll-animate">What Clients Say</h2>
+                <p class="text-lg text-slate-400 max-w-2xl mx-auto scroll-animate" style="transition-delay: 150ms;">
+                    My clients' success is my greatest achievement.
+                </p>
+            </div>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="testimonial-card p-8 rounded-2xl scroll-animate">
+                    <p class="text-slate-300 mb-6">"Shafin is a Webflow wizard! He took our vision and turned it into a reality that exceeded all our expectations. The process was seamless and the result is fantastic."</p>
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/100x100/3b82f6/ffffff?text=A" class="w-12 h-12 rounded-full mr-4" alt="Client 1">
+                        <div>
+                            <p class="font-bold text-white">Jane Smith</p>
+                            <p class="text-slate-400 text-sm font-normal">CEO, Tech Innovators</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card p-8 rounded-2xl scroll-animate" style="transition-delay: 150ms;">
+                    <p class="text-slate-300 mb-6">"Working with Shafin was a pleasure. His attention to detail and commitment to quality are second to none. Our new website has seen a 50% increase in conversions."</p>
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/100x100/6366f1/ffffff?text=B" class="w-12 h-12 rounded-full mr-4" alt="Client 2">
+                        <div>
+                            <p class="font-bold text-white">Mike Johnson</p>
+                            <p class="text-slate-400 text-sm font-normal">Founder, Creative Co.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card p-8 rounded-2xl scroll-animate" style="transition-delay: 300ms;">
+                    <p class="text-slate-300 mb-6">"If you need a Webflow expert, look no further. Shafin's skills in design, animation, and development are top-tier. Highly recommended!"</p>
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/100x100/818cf8/ffffff?text=C" class="w-12 h-12 rounded-full mr-4" alt="Client 3">
+                        <div>
+                            <p class="font-bold text-white">Sarah Lee</p>
+                            <p class="text-slate-400 text-sm font-normal">Marketing Director, StyleHub</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="py-20 md:py-32 bg-gradient-to-t from-slate-900 to-slate-950">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-semibold text-white mb-4 scroll-animate">Have a project in mind?</h2>
+            <p class="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto scroll-animate" style="transition-delay: 150ms;">
+                Let's create something amazing together.
+            </p>
+            <div class="scroll-animate" style="transition-delay: 300ms;">
+                <a href="mailto:hello@shafin.com" class="glow-btn inline-block bg-blue-600 text-white font-bold py-4 px-10 rounded-lg text-xl">
+                    hello@shafin.com
+                </a>
+            </div>
+            <div class="mt-16 text-slate-500">
+                <p>&copy; 2025 Shafin. All rights reserved.</p>
+                <p>Built with passion and Webflow.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- JavaScript for animations and interactions ---
+
+        // 1. Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // 2. Header Scroll Effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        });
+
+        // 3. Scroll Animation Observer
+        const scrollObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            rootMargin: '0px',
+            threshold: 0.1
+        });
+
+        const animatedElements = document.querySelectorAll('.scroll-animate');
+        animatedElements.forEach(el => {
+            scrollObserver.observe(el);
+        });
+
+        // 4. Custom Cursor Logic (FIXED)
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        const interactiveElements = document.querySelectorAll('a, button');
+
+        // Move cursor using GSAP for smoothness
+        window.addEventListener('mousemove', e => {
+            gsap.to(cursorDot, { duration: 0.2, x: e.clientX, y: e.clientY });
+            // The circle has a slower duration for a nice trailing effect
+            gsap.to(cursorCircle, { duration: 0.5, x: e.clientX, y: e.clientY, ease: 'power2.out' });
+        });
+
+        // Add hover effects for interactive elements using GSAP
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(cursorCircle, {
+                    duration: 0.3,
+                    scale: 1.5,
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: '#3b82f6',
+                    ease: 'power2.out'
+                });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(cursorCircle, {
+                    duration: 0.3,
+                    scale: 1,
+                    backgroundColor: 'transparent',
+                    borderColor: '#fff',
+                    ease: 'power2.out'
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>
